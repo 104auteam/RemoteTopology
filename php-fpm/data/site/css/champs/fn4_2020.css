@@ -1,0 +1,96 @@
+
+/* TODO: Devices CSS*/
+.device {
+  position: absolute;
+  width: 100px;
+  height: 80px;
+  cursor: pointer;
+  /* background-color: black; */
+}
+.host {
+  position: absolute;
+  width: 100px;
+  height: 110px;
+  cursor: pointer;
+  /* background-color: black; */
+}
+
+/* 
+  TODO: CSS Network
+*/
+
+.FW {
+  margin-left: 570px;
+  margin-top: 430px;
+}
+.RTR {
+  margin-left: 860px;
+  margin-top: 530px;
+}
+.BRANCH {
+  margin-left: 1050px;
+  margin-top: 200px;
+}
+.SW1 {
+  margin-left: 1300px;
+  margin-top: 470px;
+}
+.SW2 {
+  margin-left: 1300px;
+  margin-top: 555px;
+}
+.SW3 {
+  margin-left: 1300px;
+  margin-top: 638px;
+}
+
+/* VM */
+
+.CLI1-L {
+  margin-left: 150px;
+  margin-top: 10px;
+}
+.CLI2-L {
+  margin-left: 220px;
+  margin-top: 460px;
+}
+.CLI1-W {
+  margin-left: 500px;
+  margin-top: 770px;
+}
+.CLI2-W {
+  margin-left: 930px;
+  margin-top: 10px;
+}
+.LIN-RTR {
+  margin-left: 150px;
+  margin-top: 190px;
+}
+.DS-W {
+  margin-left: 620px;
+  margin-top: 790px;
+}
+.CS {
+  margin-left: 725px;
+  margin-top: 790px;
+}
+.FS-W {
+  margin-left: 830px;
+  margin-top: 790px;
+}
+.RAD-L {
+  margin-left: 935px;
+  margin-top: 790px;
+}
+.DMZ-W {
+  margin-left: 1040px;
+  margin-top: 790px;
+}
+.FS-L {
+  margin-left: 1070px;
+  margin-top: 10px;
+}
+.BRANCH-DC-W {
+  margin-left: 1200px;
+  margin-top: 10px;
+}
