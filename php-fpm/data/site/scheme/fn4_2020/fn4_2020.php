@@ -20,7 +20,8 @@
   $password = $_SESSION['password'];
   $dir_images = '/images/' . $_SESSION['champ'];
   $docker_address = $_SERVER['HTTP_HOST'] . ':2222/ssh/host/';
-
+  $champ    = $_SESSION['champ'];
+  
   // Connect to DB
   $conn = ConnectToDB();
 
@@ -32,19 +33,17 @@
   // TODO: Generate personal devices link
   // EXAMPLE
   // http:// $_SERVER['HTTP_HOST'] /ssh/host/10.11.8.4?header=Device&user=root&pass=toor
+
   $digi_address = $links['DIGIAddress'];
-  
+  $sql              = "SELECT NETWORK FROM championships.Devices WHERE `Champ` = '$champ'";
+  $query            = $conn->query($sql);
+  $NET_DEVICES      = $query->fetch(PDO::FETCH_ASSOC);
+  $NET_DEVICES_LIST = preg_split("/,/", $NET_DEVICES['NETWORK']);
+
   foreach ($links as $device => $link) {
-    if ( 
-        $device != 'FW'         or  
-        $device != 'RTR'        or  
-        $device != 'BRANCH'     or  
-        $device != 'SW1'        or  
-        $device != 'SW2'        or  
-        $device != 'SW3'
-    ) 
-    {
-        continue;
+    if (array_search($device, $NET_DEVICES_LIST) === False) {
+      // Not edit hosts link, DB give us normal links so continue
+      continue;
     }
     // For device $links[$device] -> port 
     $port = $links[$device];
@@ -54,7 +53,12 @@
             'port='.$port.'&'.
             'user='.$username.'&'.
             'pass='.$password;
-    }
+  }
+    
+  
+  // if (isset($_GET['vm'])) {
+  //   $ticket = file_get_contents('http://rt.au.team:5000/get-link?a=' . $vcenter['address'] . '&u=' . $vcenter['username'] . '&p=' . $vcenter['password'] . '&d=' . $vcenter['datacenter'] . '&v=' . $_GET['vm']);
+  // }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,44 +109,28 @@
         </div>
 
         <!-- VM -->
+        <?php
+          $sql      = "SELECT Complex FROM championships.Devices WHERE `Champ` = '$champ'";
+          $query    = $conn->query($sql);
+          $DEVICES  = $query->fetch(PDO::FETCH_ASSOC);
+          $DEVICES_LIST = preg_split("/,/", $DEVICES['Complex']);
 
-        <div class="host LIN-RTR"
-        onclick="callhost('<?php echo $links['LIN-RTR']; ?>');">
-        </div>
-        <div class="host CLI1-L"
-        onclick="callhost('<?php echo $links['CLI1-L']; ?>');">
-        </div>
-        <div class="host CLI2-L"
-        onclick="callhost('<?php echo $links['CLI2-L']; ?>');">
-        </div>
-        <div class="host CLI1-W"
-        onclick="callhost('<?php echo $links['CLI1-W']; ?>');">
-        </div>
-        <div class="host CLI2-W"
-        onclick="callhost('<?php echo $links['CLI2-W']; ?>');">
-        </div>
-        <div class="host DS-W"
-        onclick="callhost('<?php echo $links['DS-W']; ?>');">
-        </div>
-        <div class="host CS"
-        onclick="callhost('<?php echo $links['CS']; ?>');">
-        </div>
-        <div class="host FS-W"
-        onclick="callhost('<?php echo $links['FS-W']; ?>');">
-        </div>
-        <div class="host FS-L"
-        onclick="callhost('<?php echo $links['FS-L']; ?>');">
-        </div>
-        <div class="host RAD-L"
-        onclick="callhost('<?php echo $links['RAD-L']; ?>');">
-        </div>
-        <div class="host DMZ-W"
-        onclick="callhost('<?php echo $links['DMZ-W']; ?>');">
-        </div>
-        <div class="host BRANCH-DC-W"
-        onclick="callhost('<?php echo $links['BRANCH-DC-W']; ?>');">
-        </div>
-        
+          $query = $conn->query("SELECT * FROM `championships`.vcenter WHERE `username`='$username'");
+          $vcenter = $query->fetch();
+
+          foreach($DEVICES_LIST as $key => $vm) {
+            if(!in_array($vm, $NET_DEVICES_LIST) and $vm != 'DIGIAddress') {
+
+              $query = 'http://rt.au.team:5000/get-link?a=' . $vcenter['address'] . '&u=' . $vcenter['username'] . '@vsphere.local&p=' . $vcenter['password'] . '&d=' . $vcenter['datacenter'] . '&v=' . $vm;
+              $ticket = file_get_contents($query);
+
+              echo "<div class='host $vm' ";
+              echo "onclick=callhost('".json_decode($ticket, true)['ticket']."')>";
+              echo "</div>";
+            }
+          }
+          
+        ?>      
 
     </div>    
     <div class="timer top-left">
