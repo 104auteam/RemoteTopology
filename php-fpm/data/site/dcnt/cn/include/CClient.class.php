@@ -29,6 +29,7 @@ class CClient {
 	private static function getRec( $id ) {
 
 		CDb::open();
+
 		$rec = array();
 
 		$rs = CTable::findByID( "dcount", "dcount_id", $id, array(
@@ -87,7 +88,7 @@ class CClient {
 			"loading_threshold"=>100,
 			"rec"=>$rec,
 		);
-		
+
 		self::printLoader($cfg);
 	}
 }

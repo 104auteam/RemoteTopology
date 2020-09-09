@@ -21,7 +21,6 @@ class CSRouter {
 		$url = "";
 
 		if ( $http ) {
-			$_SERVER["SERVER_NAME"] = 'demo2020.wsr39.online';
 			$url .= "http";
 
 			$b_https = (( isset( $_SERVER["HTTPS"] ) ) && ( $_SERVER["HTTPS"] == "on" ));
@@ -29,7 +28,7 @@ class CSRouter {
 				$url .= "s";
 			}
 
-			$url .= "://" . $_SERVER["SERVER_NAME"];
+			$url .= "://" . $_SERVER['HTTP_HOST'];
 
 			if (( $_SERVER["SERVER_PORT"] != "80" ) && !$b_https ) {
 				$url .= ":" . $_SERVER["SERVER_PORT"];

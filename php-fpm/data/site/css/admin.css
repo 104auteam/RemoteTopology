@@ -35,6 +35,38 @@
     width: 100%;
 }
 
+.admin-top-panel {
+  font-size: 20px;
+  background-color: #e3e0cf29;
+  border-bottom: 2px solid black;
+  min-width: 1400px;
+  width: 100%;
+  height: 50px;
+}
+.admin-top-panel-functionblock {
+  width: 60%; 
+  margin: 0 auto;
+  text-align: center;
+  float: left;
+  position: relative;
+  height: 100%;
+  min-width: 980px;
+}
+.admin-top-panel-functionblock-function {
+  position: relative;
+  display: inline;
+  margin-left: 50px;
+  margin-right: 10px;
+  top: 20%;
+}
+
+.admin-top-panel-usersinfo {
+  position: absolute;
+  right: 0;
+  margin-right: 10px;
+  display: inline;
+}
+
 /* TODO: Admin feature block */
 .admin-feature {
   border-bottom: 1px solid;

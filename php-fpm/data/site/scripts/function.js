@@ -94,6 +94,21 @@ function GetFunction(range, action) {
     }
 }
 
+function showRecords(perPageCount, pageNumber) {
+    $.ajax({
+        type: "GET",
+        url: "/admin/features/getPageData.php",
+        data: `pageNumber=${pageNumber}&perPageCount=${perPageCount}`,
+        cache: false,
+        beforeSend: function() {
+            $('#loader').html('<img src="/images/loader.png" alt="reload" width="100" height="100" style="margin-top:10px;">'); 
+        },
+        success: function(html) {
+            $("#results").html(html);
+            $('#loader').html(''); 
+        }
+    });
+}
 // Timer function
 
 // const FULL_DASH_ARRAY = 283;

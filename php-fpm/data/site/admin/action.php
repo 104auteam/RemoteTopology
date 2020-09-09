@@ -80,6 +80,30 @@
             case 'ChangeLinkUser':
                 $module     = $_POST['module'];
                 $username   = $_POST['username'];
+
+                #### TMP VCENTER
+
+                $vcenter_address    =   $_POST['v_address'];
+                $vcenter_username   =   $username;
+                $vcenter_password   =   $_POST['v_pass'];
+                $vcenter_datacenter =   $_POST['v_dc'];
+
+                
+                try {
+                    $query   = $conn->query("INSERT `championships`.vcenter (address,username,password,datacenter)
+                            VALUES ('$vcenter_address','$vcenter_username','$vcenter_password','$vcenter_datacenter')");
+                } catch (Exception $e) {
+                    $query   = $conn->query("UPDATE `championships`.vcenter SET 
+                                `address`='$vcenter_address',
+                                `password`='$vcenter_password',
+                                `datacenter`='$vcenter_datacenter'
+                                WHERE `username` = '$vcenter_username'
+                                ");
+                }
+                // UPDATE `currentstate` SET `Championship`='$champ' WHERE `Username` IN (SELECT `Username` FROM `usersinfo`.`credentials` WHERE `adminpriv`=0)");
+
+                #### TMP VCENTER
+
                 $query   = $conn->query("SELECT Championship FROM usersinfo.currentstate WHERE `Username` = '$username'");
                 $champ   = $query->fetch(); $champ = $champ[0];
 
@@ -143,7 +167,7 @@
                             echo "NEXT\n";
                         }
                     }
-                }  
+                }
                 $_SESSION["event"] = True;
                 $_SESSION["event_description"] = "USERNAME '$username' ---> NEW LINKS";
                 break;

@@ -286,7 +286,7 @@
 
         <!-- TODO: Link to Timer -->
             
-        <a href="http://demo2020.wsr39.online/dcnt/admin/index.php?_rtp=login">Timer Page</a>
+        <a href="http://<?php echo $_SERVER['HTTP_HOST']; ?>/dcnt/admin/index.php?_rtp=login">Timer Page</a>
         <br>
         <table class='admin-table-timer'>
             <tbody>
