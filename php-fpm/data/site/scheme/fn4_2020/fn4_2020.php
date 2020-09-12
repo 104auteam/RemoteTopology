@@ -30,6 +30,10 @@
   $query  = $conn->query("SELECT *  FROM championships.`$table` WHERE `Username`='$username' "); 
   $links  = $query->fetch(PDO::FETCH_ASSOC);
 
+  $query    = $conn->query("SELECT `Timer` FROM championships.champ_list WHERE `Event`='$champ'");
+  $result = $query->fetch(PDO::FETCH_ASSOC);
+  $timer    = $_SESSION['timer']    = $result['Timer'];
+
   // TODO: Generate personal devices link
   // EXAMPLE
   // http:// $_SERVER['HTTP_HOST'] /ssh/host/10.11.8.4?header=Device&user=root&pass=toor
@@ -121,9 +125,10 @@
           foreach($DEVICES_LIST as $key => $vm) {
             if(!in_array($vm, $NET_DEVICES_LIST) and $vm != 'DIGIAddress') {
 
-              $query = 'http://rt.au.team:5000/get-link?a=' . $vcenter['address'] . '&u=' . $vcenter['username'] . '@vsphere.local&p=' . $vcenter['password'] . '&d=' . $vcenter['datacenter'] . '&v=' . $vm;
+              $query = 'http://api:5000/get-link?a=' . $vcenter['address'] . '&u=rtserviceacc@vsphere.local&p=jYYFrkj~B8_-%2B.%5B%3F&d=' . $vcenter['datacenter'] . '&v=' . $vm;
+              // echo $query;
               $ticket = file_get_contents($query);
-
+              
               echo "<div class='host $vm' ";
               echo "onclick=callhost('".json_decode($ticket, true)['ticket']."')>";
               echo "</div>";
@@ -134,11 +139,11 @@
 
     </div>    
     <div class="timer top-left">
-      <?php echo $_SESSION['timer']; ?>
+      <?php echo $timer; ?>
     </div>
   </div>
   <footer>
-    <p>
+    <p style='text-align: right; padding-right: 20px;'>
       Developed by 104auteam
       <a href='https://github.com/104auteam'><img src="/images/github.png" alt="Github"></a>
     </p>
