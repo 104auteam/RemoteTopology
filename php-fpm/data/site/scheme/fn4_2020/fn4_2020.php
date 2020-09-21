@@ -16,11 +16,11 @@
 
   // TODO: Init stage
 
-  $username = $_SESSION['username'];
-  $password = $_SESSION['password'];
-  $dir_images = '/images/' . $_SESSION['champ'];
+  $username       = $_SESSION['username'];
+  $password       = $_SESSION['password'];
+  $dir_images     = '/images/' . $_SESSION['champ'];
   $docker_address = $_SERVER['HTTP_HOST'] . ':2222/ssh/host/';
-  $champ    = $_SESSION['champ'];
+  $champ          = $_SESSION['champ'];
   
   // Connect to DB
   $conn = ConnectToDB();
@@ -58,11 +58,6 @@
             'user='.$username.'&'.
             'pass='.$password;
   }
-    
-  
-  // if (isset($_GET['vm'])) {
-  //   $ticket = file_get_contents('http://rt.au.team:5000/get-link?a=' . $vcenter['address'] . '&u=' . $vcenter['username'] . '&p=' . $vcenter['password'] . '&d=' . $vcenter['datacenter'] . '&v=' . $_GET['vm']);
-  // }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -119,22 +114,26 @@
           $DEVICES  = $query->fetch(PDO::FETCH_ASSOC);
           $DEVICES_LIST = preg_split("/,/", $DEVICES['Complex']);
 
+          $vm_list = '';
+          
+          foreach($DEVICES_LIST as $key => $vm) {
+            if(!in_array($vm, $NET_DEVICES_LIST) and $vm != 'DIGIAddress') {
+              $vm_list .= $vm.',';
+            }
+          }
+          $vm_list = substr($vm_list, 0, -1);  
+
           $query = $conn->query("SELECT * FROM `championships`.vcenter WHERE `username`='$username'");
           $vcenter = $query->fetch();
 
-          foreach($DEVICES_LIST as $key => $vm) {
-            if(!in_array($vm, $NET_DEVICES_LIST) and $vm != 'DIGIAddress') {
+          $query    = 'http://api:5000/get-links?a=' . $vcenter['address'] . '&u=rtserviceacc@vsphere.local&p=jYYFrkj~B8_-%2B.%5B%3F&d=' . $vcenter['datacenter'] . '&v=' . $vm_list;
+          $tickets  = json_decode(file_get_contents($query));
 
-              $query = 'http://api:5000/get-link?a=' . $vcenter['address'] . '&u=rtserviceacc@vsphere.local&p=jYYFrkj~B8_-%2B.%5B%3F&d=' . $vcenter['datacenter'] . '&v=' . $vm;
-              // echo $query;
-              $ticket = file_get_contents($query);
-              
-              echo "<div class='host $vm' ";
-              echo "onclick=callhost('".json_decode($ticket, true)['ticket']."')>";
-              echo "</div>";
-            }
-          }
-          
+          foreach ($tickets as $vm => $ticket) {
+            echo "<div class='host $vm' ";
+            echo "onclick=callhost('".$ticket."')>";
+            echo "</div>";
+          }          
         ?>      
 
     </div>    

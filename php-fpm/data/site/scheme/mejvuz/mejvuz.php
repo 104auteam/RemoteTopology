@@ -16,50 +16,50 @@
 
   // TODO: Init stage
 
-  $username = $_SESSION['username'];
-  $password = $_SESSION['password'];
-  $dir_images = '/images/' . $_SESSION['champ'];
-  $docker_address = $_SERVER['HTTP_HOST'] . ':2222/ssh/host/';
+  $username         = $_SESSION['username'];
+  $password         = $_SESSION['password'];
+  $dir_images       = '/images/' . $_SESSION['champ'];
+  $docker_address   = $_SERVER['HTTP_HOST'] . ':2222/ssh/host/';
+  $champ            = $_SESSION['champ'];
 
   // Connect to DB
   $conn = ConnectToDB();
 
   // Get links for username from DB
-  $table  = $_SESSION['champ'];
-  $query  = $conn->query("SELECT *  FROM championships.`$table` WHERE `Username`='$username' "); 
-  $links  = $query->fetch(PDO::FETCH_ASSOC);
+  $table            = $_SESSION['champ'];
+  $query            = $conn->query("SELECT *  FROM championships.`$table` WHERE `Username`='$username' "); 
+  $links            = $query->fetch(PDO::FETCH_ASSOC);
+  
+  $query            = $conn->query("SELECT `Timer` FROM championships.champ_list WHERE `Event`='$champ'");
+  $result           = $query->fetch(PDO::FETCH_ASSOC);
+  $timer            = $_SESSION['timer']    = $result['Timer'];
 
   // TODO: Generate personal devices link
   // EXAMPLE
   // http:// $_SERVER['HTTP_HOST'] /ssh/host/10.11.8.4?header=Device&user=root&pass=toor
-  $digi_address = $links['DIGIAddress'];
   
+  $digi_address     = $links['DIGIAddress'];
+  $sql              = "SELECT NETWORK FROM championships.Devices WHERE `Champ` = '$champ'";
+  $query            = $conn->query($sql);
+  $NET_DEVICES      = $query->fetch(PDO::FETCH_ASSOC);
+  $NET_DEVICES_LIST = preg_split("/,/", $NET_DEVICES['NETWORK']);
+  $net_links        = [];
+
   foreach ($links as $device => $link) {
-    if ( 
-        $device == 'CLI'        or  
-        $device == 'FS'         or  
-        $device == 'RDS'        or  
-        $device == 'DC'         or  
-        $device == 'Student'    or  
-        $device == 'SRV1'       or  
-        $device == 'SRV2'       or  
-        $device == 'WEB'        or  
-        $device == 'VPN'        or  
-        $device == 'MON'        or  
-        $device == 'Teacher'
-    ) 
-    {
-        continue;
+    if (array_search($device, $NET_DEVICES_LIST) === False) {
+      // Not edit hosts link, DB give us normal links so continue
+      continue;
     }
     // For device $links[$device] -> port 
-    $port = $links[$device];
-    $links[$device] =
+    $port = $link;
+    // $links[$device] =
+    $net_links[$device] =
     'http://'.$docker_address.$digi_address.'?'.
             'header='.$device.'&'.
             'port='.$port.'&'.
             'user='.$username.'&'.
             'pass='.$password;
-    }
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -88,86 +88,42 @@
     <div class="main-scheme">
         <img src=" <?php echo $dir_images . '/' . $_SESSION['champ'] . '.png' ; ?> " alt="Scheme" class="main-scheme-image">
 
-        <!-- Left -->
-        <div class="host CLI"
-        onclick="callhost('<?php echo $links['CLI']; ?>');">
-        </div>
+        <?php
+          // Init 
+          $sql      = "SELECT Complex FROM championships.Devices WHERE `Champ` = '$champ'";
+          $query    = $conn->query($sql);
+          $DEVICES  = $query->fetch(PDO::FETCH_ASSOC);
+          $DEVICES_LIST = preg_split("/,/", $DEVICES['Complex']);
 
-        <div class="host Student"
-        onclick="callhost('<?php echo $links['Student']; ?>');">
-        </div>
+          // Generate VM LIST
+          $vm_list = '';
+          foreach($DEVICES_LIST as $key => $vm) {
+            if(!in_array($vm, $NET_DEVICES_LIST) and $vm != 'DIGIAddress') {
+              $vm_list .= $vm.',';
+            }
+          }
+          $vm_list = substr($vm_list, 0, -1);  
 
-        <div class="host DC"
-        onclick="callhost('<?php echo $links['DC']; ?>');">
-        </div>
+          $query = $conn->query("SELECT * FROM `championships`.vcenter WHERE `username`='$username'");
+          $vcenter = $query->fetch();
 
-        <div class="host FS"
-        onclick="callhost('<?php echo $links['FS']; ?>');">
-        </div>
+          $query    = 'http://api:5000/get-links?a=' . $vcenter['address'] . '&u=rtserviceacc@vsphere.local&p=jYYFrkj~B8_-%2B.%5B%3F&d=' . $vcenter['datacenter'] . '&v=' . $vm_list;
+          $tickets  = json_decode(file_get_contents($query));
+          echo $query;
+          // Create div with VM links
+          foreach ($tickets as $vm => $ticket) {
+            echo "<div class='host $vm' ";
+            echo "onclick=callhost('".$ticket."')>";
+            echo "</div>";
+          }
 
-        <div class="host RDS"
-        onclick="callhost('<?php echo $links['RDS']; ?>');">
-        </div>
-
-        <div class="host RDS"
-        onclick="callhost('<?php echo $links['RDS']; ?>');">
-        </div>
-
-        <div class="host SRV1"
-        onclick="callhost('<?php echo $links['RDS']; ?>');">
-        </div>
-
-        <!-- Middle -->
-        <div class="device S1"
-        onclick="call('<?php echo $links['S1']; ?>');">
-        </div>
-        
-        <div class="device S2"
-        onclick="call('<?php echo $links['S2']; ?>');">
-        </div>
-        
-        <div class="device S3"
-        onclick="call('<?php echo $links['S3']; ?>');">
-        </div>
-        
-        <div class="device R1"
-        onclick="call('<?php echo $links['R1']; ?>');">
-        </div>
-        
-        <div class="device R2"
-        onclick="call('<?php echo $links['R2']; ?>');">
-        </div>
-        
-        <div class="device ISP1"
-        onclick="call('<?php echo $links['ISP1']; ?>');">
-        </div>
-        
-        <div class="device ISP2"
-        onclick="call('<?php echo $links['ISP2']; ?>');">
-        </div>
-
-        <!-- Right -->
-        <div class="host SRV2"
-        onclick="callhost('<?php echo $links['SRV2']; ?>');">
-        </div>
-        
-        <div class="host WEB"
-        onclick="callhost('<?php echo $links['WEB']; ?>');">
-        </div>
-        
-        <div class="host VPN"
-        onclick="callhost('<?php echo $links['VPN']; ?>');">
-        </div>
-        
-        <div class="host MON"
-        onclick="callhost('<?php echo $links['MON']; ?>');">
-        </div>
-        
-        <div class="host Teacher"
-        onclick="callhost('<?php echo $links['Teacher']; ?>');">
-        </div>
-        
-
+          // Create div with NETWORK links
+          foreach ($net_links as $device => $link) {
+            echo "<div class='device $device' ";
+            echo "onclick=call('".$link."')>";
+            echo "</div>";
+          }
+        ?>  
     </div>    
     <div class="timer top-left">
       <?php echo $_SESSION['timer']; ?>
