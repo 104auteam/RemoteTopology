@@ -80,7 +80,7 @@
   margin-top: 370px;
   margin-left: 840px;
 }
-.BR-RTRw {
+.BR-RTR-W {
   margin-top: 50px;
   margin-left: 840px;
 }
@@ -145,6 +145,10 @@
   margin-top: 220px;
   margin-left: 130px;
 }
+.BR-RTR {
+  margin-top: 370px;
+  margin-left: 510px;
+}
 .BR-LinSRV {
   margin-top: 360px;
   margin-left: 130px;
@@ -156,10 +160,6 @@
 .BR-SW {
   margin-top: 300px;
   margin-left: 400px;
-}
-.BR-RTR {
-  margin-top: 370px;
-  margin-left: 510px;
 }
 .ISP1 {
   margin-top: 210px;

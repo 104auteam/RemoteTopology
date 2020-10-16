@@ -29,7 +29,7 @@
   $query = $conn->query("SELECT Module FROM currentstate WHERE Username='$username'");
   $module = $query->fetch(); $module = $module[0];
   // If module not windows, redirect to choice
-  if ($module != 'B') {
+  if ($module != 'C') {
     Redirect('choice.php');
   }
   
@@ -115,17 +115,14 @@
 
           $query    = 'http://api:5000/get-links?a=' . $vcenter['address'] . '&u=rtserviceacc@vsphere.local&p=jYYFrkj~B8_-%2B.%5B%3F&d=' . $vcenter['datacenter'] . '&v=' . $vm_list;
           $tickets  = json_decode(file_get_contents($query));
-
+          // echo $query;
           // Create div with VM links
+
+          // $query = $conn->query("SELECT `ILO` FROM `demo2020c1.2C` WHERE Username='$username'");
+          // $tickets['ILO'] = $query->fetch(); $tickets['ILO'] = $tickets['ILO'][0];
+          print_r($tickets);
+
           foreach ($tickets as $vm => $ticket) {
-            if($vm == 'ESXi') {
-              $query  = $conn->query("SELECT `ILO` FROM `championships`.`demo2020c1.2C` WHERE `Username`='$username'");
-              $ticket = $query->fetch();
-              echo "<div class='host $vm' ";
-              echo "onclick=callhost('".$ticket[0]."')>";
-              echo "</div>";
-              continue;
-            }
             echo "<div class='host $vm' ";
             echo "onclick=callhost('".$ticket."')>";
             echo "</div>";
